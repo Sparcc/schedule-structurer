@@ -1,9 +1,18 @@
 import re
 from openpyxl import load_workbook
+import plotly.plotly as py
+import plotly.graph_objs as go
+import plotly
+
+username = 'sparcccode'
+api_key = 'tKQTWqVGh3ilSRXXqJEr'
+plotly.tools.set_credentials_file(username=username, api_key=api_key)
+
 wb = load_workbook("schedule.xlsx")
 ws = wb.active
 startingCells = 4
 maxCells = 261
+numData = maxCells-startingCells
 regexCode = '(\d{1,3}) (\d{0,3}%) (.+) (\d{0,3} days{0,1}|\d{0,1}.\d{0,1}.\d{0,1} days{0,1}) (\S{3} \d{1,2}\/\d{1,2}\/\d{1,2}) (\S{3} \d{1,2}\/\d{1,2}\/\d{1,2})( \d{1,3}|)(.*){0,1}'
 class ScheduleEntry:
     ID =""
@@ -15,6 +24,7 @@ class ScheduleEntry:
     Predecessors = ""
     Resources = "Not Defined"
 
+numMismatches = 0
 schedule = []
 i=startingCells
 while i < maxCells:
@@ -43,10 +53,38 @@ while i < maxCells:
             schedule.append(scheduleEntry)
             
     else:
-        print("No Match")
+        numMismatches +=1
     i+=1
-    
 
+if numMismatches >0:
+    print("Could not match {numMismatches}/{numData} rows"
+    .format(numMismatches=numMismatches,numData=numData))
+    
+tasksComplete = 0
+tasksInProgress = 0
+tasksNotStarted = 0
+
+
+for value in schedule:
+    intValue = int(value.Completion[:len(value.Completion)-1])
+    if intValue == 100:
+        tasksComplete +=1
+    elif intValue > 0 and intValue <100:
+        tasksInProgress +=1
+    elif intValue == 0:
+        tasksNotStarted +=1
+
+labels = ['tasksComplete','tasksInProgress','tasksNotStarted']
+values = [tasksComplete,tasksInProgress,tasksNotStarted]
+
+trace = go.Pie(labels=labels, values=values)
+data = [trace]
+layout = go.Layout(title='Summary of Tasks', width=800, height=640)
+fig = go.Figure(data=data, layout=layout)
+#py.iplot([trace], filename='scheduleOverview')
+py.image.save_as(fig, filename='task-summary.png')
+
+'''
 for value in schedule:
     searchForMe = '(.*Thomas Rea.*)'
     result = re.search(searchForMe,value.Resources)
@@ -59,4 +97,4 @@ for value in schedule:
         value.Finish+", "+
         #value.Predecessors+", "+
         value.Resources)
-        print("")
+'''

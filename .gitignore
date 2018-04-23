@@ -56,3 +56,7 @@ docs/_build/
 
 # PyBuilder
 target/
+
+#not exporting the data or graphs created
+*.xlsx
+*.png
