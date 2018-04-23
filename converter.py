@@ -48,14 +48,15 @@ while i < maxCells:
     
 
 for value in schedule:
-    searchForMe = '(.*Thomas.*)'
+    searchForMe = '(.*Thomas Rea.*)'
     result = re.search(searchForMe,value.Resources)
     if result:
         print(#value.ID+", "+
-        #value.Completion+", "+
+        value.Completion+", "+
         value.Task+", "+
         value.Duration+", "+
         value.Start+", "+
         value.Finish+", "+
         #value.Predecessors+", "+
         value.Resources)
+        print("")
