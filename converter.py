@@ -82,19 +82,17 @@ data = [trace]
 layout = go.Layout(title='Summary of Tasks', width=800, height=640)
 fig = go.Figure(data=data, layout=layout)
 #py.iplot([trace], filename='scheduleOverview')
-py.image.save_as(fig, filename='task-summary.png')
+#py.image.save_as(fig, filename='task-summary.png')
 
-'''
+
 for value in schedule:
     searchForMe = '(.*Thomas Rea.*)'
     result = re.search(searchForMe,value.Resources)
-    if result:
+    if result and int(value.Completion[:len(value.Completion)-1]) < 90:
         print(#value.ID+", "+
         value.Completion+", "+
         value.Task+", "+
         value.Duration+", "+
         value.Start+", "+
-        value.Finish+", "+
-        #value.Predecessors+", "+
-        value.Resources)
-'''
+        value.Finish)
+        #value.Predecessors)
